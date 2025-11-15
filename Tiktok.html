@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>TikTok Downloader - Soft Red Dark</title>  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">  <style>  
+    * {  
+        margin: 0;  
+        padding: 0;  
+        box-sizing: border-box;  
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
+    }  
+
+    body {  
+        background: #000000;  
+        overflow: hidden;  
+        min-height: 100vh;  
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
+        padding: 30px;  
+        position: relative;  
+        perspective: 1200px;  
+    }  
+
+    /* BACKGROUND GLOW RED SOFT */  
+    body::before {  
+        content: "";  
+        position: absolute;  
+        inset: 0;  
+        background: radial-gradient(circle at 30% 30%, rgba(150,0,0,0.25), transparent 70%),  
+                    radial-gradient(circle at 70% 70%, rgba(120,0,0,0.2), transparent 70%);  
+        filter: blur(60px);  
+        animation: move3D 10s infinite alternate ease-in-out;  
+        z-index: -3;  
+    }  
+
+    @keyframes move3D {  
+        0% { transform: translateZ(-180px) translateX(-40px); opacity: 0.6; }  
+        100% { transform: translateZ(-250px) translateX(40px); opacity: 1; }  
+    }  
+
+    /* PARTIKEL */  
+    .particles {  
+        position: absolute;  
+        inset: 0;  
+        overflow: hidden;  
+        z-index: -1;  
+    }  
+
+    .particles span {  
+        position: absolute;  
+        width: 5px;  
+        height: 5px;  
+        background: rgba(200, 50, 50, 0.5);  
+        border-radius: 50%;  
+        box-shadow: 0 0 10px rgba(200,50,50,0.4);  
+        animation: floatUp 12s linear infinite;  
+    }  
+
+    @keyframes floatUp {  
+        0% { transform: translateY(100vh) scale(0.5); opacity: 0; }  
+        50% { opacity: .8; }  
+        100% { transform: translateY(-10vh) scale(1.1); opacity: 0; }  
+    }  
+
+    /* CONTAINER 3D */  
+    .container {  
+        width: 100%;  
+        max-width: 500px;  
+        padding: 35px;  
+        border-radius: 18px;  
+        background: rgba(255, 255, 255, 0.03);  
+        backdrop-filter: blur(10px);  
+        border: 1px solid rgba(200, 50, 50, 0.25);  
+        box-shadow: 0 0 25px rgba(255,0,0,0.15);  
+        animation: fadeUp 1.3s ease forwards;  
+        opacity: 0;  
+        transform: rotateX(10deg);  
+    }  
+
+    @keyframes fadeUp {  
+        from { opacity: 0; transform: translateY(40px) rotateX(15deg); }  
+        to { opacity: 1; transform: translateY(0) rotateX(10deg); }  
+    }  
+
+    /* HEADER */  
+    .header h1 {  
+        text-align: center;  
+        font-size: 2.2rem;  
+        margin-bottom: 6px;  
+        background: linear-gradient(#b10000, #ff4d4d, #ffffff);  
+        -webkit-background-clip: text;  
+        -webkit-text-fill-color: transparent;  
+        text-shadow: 0 0 12px rgba(255,0,0,0.3);  
+    }  
+
+    .copyright {  
+        text-align: center;  
+        color: #d8a5a5;  
+        font-size: 0.85rem;  
+        margin-bottom: 20px;  
+    }  
+
+    /* INPUT */  
+    .input-group label {  
+        color: #ffbaba;  
+        margin-bottom: 7px;  
+        display: block;  
+        font-size: 0.9rem;  
+    }  
+
+    .url-input {  
+        width: 100%;  
+        padding: 14px;  
+        border-radius: 12px;  
+        border: 1px solid rgba(180,0,0,0.4);  
+        background: rgba(255, 0, 0, 0.08);  
+        color: white;  
+        font-size: 1rem;  
+        outline: none;  
+    }  
+
+    /* BUTTON */  
+    .download-btn {  
+        width: 100%;  
+        padding: 16px;  
+        margin-top: 12px;  
+        border-radius: 12px;  
+        border: none;  
+        font-size: 1.2rem;  
+        font-weight: bold;  
+        cursor: pointer;  
+        background: linear-gradient(45deg, #8a0000, #c31616);  
+        color: white;  
+        box-shadow: 0 0 18px rgba(255,0,0,0.25);  
+        transition: 0.3s;  
+        position: relative;  
+    }  
+
+    /* LOADING */  
+    .loading-spinner {  
+        width: 40px;  
+        height: 40px;  
+        border: 4px solid rgba(255, 0, 0, 0.2);  
+        border-left: 4px solid #c60000;  
+        border-radius: 50%;  
+        animation: rotate 1s infinite linear;  
+        margin: auto;  
+    }  
+
+    @keyframes rotate { 100% { transform: rotate(360deg); } }  
+
+    /* POPUP MODE */  
+    #modePopup {  
+        display:none;  
+        position: fixed;  
+        inset: 0;  
+        background: rgba(0,0,0,0.7);  
+        backdrop-filter: blur(6px);  
+        justify-content: center;  
+        align-items: center;  
+        z-index: 9999;  
+    }  
+
+    /* TOMBOL KEMBALI — DIPINDAH KE KIRI */  
+    .back-btn {  
+        position: fixed;  
+        top: 18px;  
+        left: 18px;   /* ← DIPINDAHKAN KE KIRI */  
+        z-index: 99999;  
+        width: 45px;  
+        height: 45px;  
+        background: rgba(255,0,0,0.15);  
+        border: 1px solid rgba(255,0,0,0.35);  
+        backdrop-filter: blur(6px);  
+        border-radius: 50%;  
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
+        color: #ffbdbd;  
+        font-size: 20px;  
+        cursor: pointer;  
+        transition: 0.3s;  
+        box-shadow: 0 0 10px rgba(255,0,0,0.25);  
+    }  
+
+    .back-btn:hover {  
+        background: rgba(255,0,0,0.25);  
+        transform: scale(1.08);  
+        box-shadow: 0 0 15px rgba(255,0,0,0.35);  
+    }  
+</style>
+
+</head>  <body>  <!-- TOMBOL KEMBALI (KIRI) -->  <a href="https://morgan-cwebsite.vercel.app" class="back-btn">  
+    <i class="fas fa-arrow-left"></i>  
+</a>  <div class="particles">  
+    <span style="left:10%; animation-delay:0s"></span>  
+    <span style="left:30%; animation-delay:1s"></span>  
+    <span style="left:50%; animation-delay:2s"></span>  
+    <span style="left:70%; animation-delay:0.5s"></span>  
+    <span style="left:90%; animation-delay:1.5s"></span>  
+    <span style="left:20%; animation-delay:2.5s"></span>  
+    <span style="left:40%; animation-delay:3s"></span>  
+    <span style="left:60%; animation-delay:4s"></span>  
+</div>  <div class="container">  
+    <div class="header">  
+        <h1>TikTok Downloader</h1>  
+        <div class="copyright">@FanzKings</div>  
+    </div>  <div class="input-group">  
+    <label>URL TikTok</label>  
+    <input type="text" id="url" class="url-input" placeholder="Tempel URL TikTok">  
+</div>  
+
+<button id="btn" onclick="dl()" class="download-btn">  
+    <i class="fas fa-download"></i> Download  
+</button>  
+
+<div id="loading" style="display:none; text-align:center; margin-top:20px;">  
+    <div class="loading-spinner"></div>  
+    <p style="margin-top:10px; color:#ffb4b4;">Mengunduh...</p>  
+</div>
+
+</div>  <!-- POPUP MODE -->  <div id="modePopup">  
+    <div style="  
+        width: 85%;  
+        max-width: 310px;  
+        padding: 20px;  
+        background: rgba(255,255,255,0.05);  
+        border: 1px solid rgba(255,0,0,0.3);  
+        border-radius: 15px;  
+        text-align:center;  
+    ">  
+        <h3 style="color:#ffbaba; margin-bottom:10px;">Pilih Mode Download</h3>  <button onclick="downloadNow('hd')" class="download-btn" style="margin-top:10px;">Download HD</button>  
+    <button onclick="downloadNow('sd')" class="download-btn">Download SD</button>  
+    <button onclick="downloadNow('mp3')" class="download-btn">Download MP3</button>  
+
+    <button onclick="closePopup()"   
+        style="margin-top:15px; padding:10px; width:100%; background:#300; color:white; border-radius:10px;">  
+        Batal  
+    </button>  
+</div>
+
+</div>  <script>  
+let DL_LINK_HD = "";  
+let DL_LINK_SD = "";  
+let DL_LINK_MP3 = "";  
+  
+function openPopup() {  
+    document.getElementById("modePopup").style.display = "flex";  
+}  
+  
+function closePopup() {  
+    document.getElementById("modePopup").style.display = "none";  
+}  
+  
+async function dl() {  
+    const url = document.getElementById("url").value.trim();  
+    if (!url) return alert("Masukkan link TikTok!");  
+  
+    const btn = document.getElementById("btn");  
+    const loading = document.getElementById("loading");  
+  
+    btn.disabled = true;  
+    loading.style.display = "block";  
+  
+    try {  
+        const api = `https://api.nvidiabotz.xyz/download/tiktok?url=${encodeURIComponent(url)}`;  
+        const res = await fetch(api);  
+        const json = await res.json();  
+  
+        if (!json.status) throw new Error("Gagal mengambil data");  
+  
+        const { video_hd, video_sd, mp3 } = json.result;  
+  
+        DL_LINK_HD = video_hd;  
+        DL_LINK_SD = video_sd;  
+        DL_LINK_MP3 = mp3;  
+  
+        openPopup();  
+  
+    } catch (e) {  
+        alert(e.message);  
+    }  
+  
+    btn.disabled = false;  
+    loading.style.display = "none";  
+}  
+  
+function downloadNow(mode) {  
+    if (mode === "hd") window.open(DL_LINK_HD, "_blank");  
+    if (mode === "sd") window.open(DL_LINK_SD, "_blank");  
+    if (mode === "mp3") window.open(DL_LINK_MP3, "_blank");  
+  
+    closePopup();  
+}  
+</script> 
+</body>  
+</html>  
